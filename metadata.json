@@ -1,0 +1,6 @@
+{
+  "name": "Vertex Invest",
+  "description": "Premium Next-Gen Fintech & Yield Investment Platform with Portfolios, Wallet Engine, Real-Time Analytics, and Referral Network",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
