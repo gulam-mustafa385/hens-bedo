@@ -23,6 +23,24 @@ import {
   UserRound,
   Users,
   X,
+  Wallet,
+  Globe,
+  Zap,
+  Award,
+  ArrowUpRight,
+  ArrowDownRight,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  UserCheck,
+  UserX,
+  Ban,
+  Trash2,
+  Send,
+  Megaphone,
+  Database,
+  Lock,
+  Check,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { db, isFirebaseConfigured } from '../lib/firebase';
@@ -49,6 +67,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const loadUsers = async () => {
     if (!isFirebaseConfigured() || !db) {
@@ -256,435 +275,806 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     { id: 'support', label: 'Support', icon: FileText },
   ];
 
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    return name.substring(0, 2).toUpperCase();
+  };
+
+  const statusBadge = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black border border-emerald-200">
+            <CheckCircle2 className="w-3 h-3" /> Approved
+          </span>
+        );
+      case 'pending':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-black border border-amber-200">
+            <Clock3 className="w-3 h-3" /> Pending
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-[10px] font-black border border-rose-200">
+            <Ban className="w-3 h-3" /> Rejected
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black border border-slate-200">
+            {status}
+          </span>
+        );
+    }
+  };
+
   return (
-    <div className="admin-panel-root min-h-screen bg-[#F8FAFC] text-slate-900">
-      <div className="admin-panel-layout flex min-h-screen">
-        <aside className="admin-sidebar w-82 bg-[linear-gradient(180deg,#17213B_0%,#14263C_62%,#102B34_100%)] text-white px-5 py-8 hidden md:flex flex-col">
-          <div className="mb-8">
+    <div className="min-h-screen bg-[#0f172a] text-slate-100">
+      <div className="flex min-h-screen">
+        {/* ─── SIDEBAR ─── */}
+        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-[#1e1b4b] via-[#312e81] to-[#1e1b4b] text-white flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+          {/* Brand */}
+          <div className="px-6 py-7 border-b border-white/10">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#2563EB] flex items-center justify-center shadow-lg shadow-blue-950/40">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
                 <ShieldCheck className="h-6 w-6 text-white" />
               </div>
               <div>
-                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-blue-200">HNK</div>
-                <div className="text-xl font-black">Admin Console</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-300">Hens Bedo</div>
+                <div className="text-lg font-black tracking-tight">Admin Console</div>
               </div>
             </div>
           </div>
 
-          <nav className="space-y-2">
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto px-4 py-5 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
+              const active = section === item.id;
               return (
                 <button
                   key={item.id}
-                  onClick={() => setSection(item.id)}
-                  className={`admin-nav-button w-full text-left px-4 py-3 rounded-2xl font-black text-sm transition-all flex items-center gap-3 ${
-                    section === item.id
-                      ? 'active bg-[#2563EB] text-white shadow-lg shadow-blue-500/20'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                  onClick={() => { setSection(item.id); setSidebarOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+                    active
+                      ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
+                  {item.id === 'deposits' && pendingDeposits.length > 0 && (
+                    <span className="ml-auto bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                      {pendingDeposits.length}
+                    </span>
+                  )}
+                  {item.id === 'withdrawals' && pendingWithdrawals.length > 0 && (
+                    <span className="ml-auto bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                      {pendingWithdrawals.length}
+                    </span>
+                  )}
                 </button>
-              )
+              );
             })}
+          </nav>
 
+          {/* Logout */}
+          <div className="px-4 py-5 border-t border-white/10">
             <button
               onClick={async () => {
                 await logout();
                 onClose();
                 window.location.assign('/');
               }}
-              className="admin-logout-button w-full text-left px-4 py-3 rounded-2xl font-black text-sm transition-all flex items-center gap-3 text-rose-300 hover:bg-rose-700 hover:text-white mt-10"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-rose-500/20 text-rose-300 font-black text-sm hover:bg-rose-500 hover:text-white transition-all"
             >
               <LogOut className="h-4 w-4" /> Logout
             </button>
-          </nav>
+          </div>
         </aside>
 
-        <main className="admin-main flex-1 p-5 lg:p-8 overflow-y-auto">
-          <div className="admin-topbar flex items-center justify-between mb-7">
-            <div>
-              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Control Center</div>
-              <h1 className="admin-title text-3xl font-black text-[#081A2E] tracking-tight">
-                {navItems.find((x) => x.id === section)?.label || 'Dashboard'}
-              </h1>
-            </div>
+        {/* Mobile sidebar backdrop */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
+        )}
+
+        {/* ─── MAIN CONTENT ─── */}
+        <main className="flex-1 min-w-0 bg-[#f1f5f9] text-slate-900">
+          {/* Topbar */}
+          <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="admin-search hidden lg:flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 shadow-sm">
-                <Search className="h-4 w-4 text-slate-400" />
-                <input className="w-48 outline-none bg-transparent text-xs font-bold text-slate-600 placeholder:text-slate-400" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search" />
-              </div>
-              <button className="admin-icon-button flex items-center justify-center h-10 w-10 rounded-2xl bg-white border border-slate-200 shadow-sm text-slate-500 hover:text-blue-600">
-                <Bell className="h-4 w-4" />
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200"
+              >
+                <Menu className="h-5 w-5" />
               </button>
-              <div className="admin-profile flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-                <div className="admin-avatar h-9 w-9 rounded-full bg-[#0F6C58] text-white flex items-center justify-center font-black text-xs">AD</div>
-                <div className="hidden sm:block">
-                  <div className="text-xs font-black text-slate-900">Admin</div>
-                  <div className="text-[10px] font-black text-slate-500 uppercase">Super Admin</div>
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Control Center</div>
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  {navItems.find((x) => x.id === section)?.label || 'Dashboard'}
+                </h1>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden md:flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                <Search className="h-4 w-4 text-slate-400" />
+                <input
+                  className="w-40 outline-none bg-transparent text-xs font-bold text-slate-600 placeholder:text-slate-400"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search users..."
+                />
+              </div>
+              <button className="relative flex items-center justify-center h-10 w-10 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200">
+                <Bell className="h-4 w-4" />
+                {(pendingDeposits.length + pendingWithdrawals.length) > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">
+                    {pendingDeposits.length + pendingWithdrawals.length}
+                  </span>
+                )}
+              </button>
+              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center font-black text-xs">
+                  {getInitials(user?.username)}
                 </div>
-                <ChevronDown className="h-4 w-4 text-slate-500" />
+                <div className="hidden sm:block">
+                  <div className="text-xs font-black text-slate-900">{user?.username || 'Admin'}</div>
+                  <div className="text-[9px] font-black text-violet-600 uppercase">Super Admin</div>
+                </div>
+                <ChevronDown className="h-4 w-4 text-slate-400" />
               </div>
               <button
                 onClick={onClose}
-                className="premium-button secondary px-4 py-2 rounded-2xl bg-white border border-slate-200 font-black text-xs shadow-sm hover:bg-slate-50"
+                className="hidden sm:flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 text-white font-black text-xs hover:bg-slate-800 transition-all"
               >
-                Close
+                <X className="h-3.5 w-3.5" /> Close
               </button>
             </div>
-          </div>
+          </header>
 
-          {section === 'dashboard' && (
-            <div className="admin-dashboard-area space-y-5">
-              <section className="dashboard-summary-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                <div className="rounded-[28px] bg-gradient-to-br from-[#1a7f69] to-[#1f6a4f] p-[1px] shadow-sm">
-                  <div className="rounded-[27px] bg-white/95 p-5 h-full">
+          <div className="p-4 sm:p-6 lg:p-8">
+            {/* ─── DASHBOARD ─── */}
+            {section === 'dashboard' && (
+              <div className="space-y-6">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                  <div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase text-slate-500">Total Users</span>
-                      <span className="rounded-full bg-emerald-50 text-[#175b51] p-2"><i className="fa-solid fa-users" /></span>
+                      <span className="text-[10px] font-black uppercase text-slate-400">Total Users</span>
+                      <span className="rounded-xl bg-violet-50 text-violet-600 p-2"><Users className="h-4 w-4" /></span>
                     </div>
-                    <div className="mt-4 flex items-end justify-between">
+                    <div className="mt-3 flex items-end justify-between">
                       <div>
-                        <div className="text-3xl font-black text-[#183d31]">{users.length}</div>
-                        <div className="text-[10px] font-black uppercase text-slate-500 mt-2">Active accounts</div>
+                        <div className="text-3xl font-black text-slate-900">{users.length}</div>
+                        <div className="text-[10px] font-black text-slate-400 mt-1">Active accounts</div>
                       </div>
-                      <span className="text-emerald-700 text-xs font-black">+{users.length}</span>
+                      <span className="text-emerald-600 text-xs font-black flex items-center gap-1">
+                        <ArrowUpRight className="h-3 w-3" /> {users.length > 0 ? '+Live' : '0'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-400">Wallet Value</span>
+                      <span className="rounded-xl bg-amber-50 text-amber-600 p-2"><Wallet className="h-4 w-4" /></span>
+                    </div>
+                    <div className="mt-3 flex items-end justify-between">
+                      <div>
+                        <div className="text-3xl font-black text-slate-900">PKR {Number(analytics.totalBalance || 0).toLocaleString()}</div>
+                        <div className="text-[10px] font-black text-slate-400 mt-1">Total balance</div>
+                      </div>
+                      <span className="text-emerald-600 text-xs font-black flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-400">Pending Deposits</span>
+                      <span className="rounded-xl bg-orange-50 text-orange-600 p-2"><Landmark className="h-4 w-4" /></span>
+                    </div>
+                    <div className="mt-3 flex items-end justify-between">
+                      <div>
+                        <div className="text-3xl font-black text-slate-900">{pendingDeposits.length}</div>
+                        <div className="text-[10px] font-black text-slate-400 mt-1">Awaiting review</div>
+                      </div>
+                      <span className={`text-xs font-black ${pendingDeposits.length > 0 ? 'text-orange-600' : 'text-emerald-600'}`}>
+                        {pendingDeposits.length > 0 ? 'Needs action' : 'Clear'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-400">Referral Network</span>
+                      <span className="rounded-xl bg-emerald-50 text-emerald-600 p-2"><TrendingUp className="h-4 w-4" /></span>
+                    </div>
+                    <div className="mt-3 flex items-end justify-between">
+                      <div>
+                        <div className="text-3xl font-black text-slate-900">{analytics.referrals}</div>
+                        <div className="text-[10px] font-black text-slate-400 mt-1">Linked users</div>
+                      </div>
+                      <span className="text-emerald-600 text-xs font-black">{users.length ? 'Active' : 'No data'}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-[28px] bg-gradient-to-br from-[#eece77] to-[#e9b858] p-[1px] shadow-sm">
-                  <div className="rounded-[27px] bg-white/95 p-5 h-full">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase text-slate-500">Wallet Value</span>
-                      <span className="rounded-full bg-amber-50 text-amber-700 p-2"><i className="fa-solid fa-wallet" /></span>
-                    </div>
-                    <div className="mt-4 flex items-end justify-between">
+                {/* Performance + Admin Status */}
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                  {/* Performance */}
+                  <div className="xl:col-span-2 rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-5">
                       <div>
-                        <div className="text-3xl font-black text-[#281f41]">PKR {Number(analytics.totalBalance || 0).toLocaleString()}</div>
-                        <div className="text-[10px] font-black uppercase text-slate-500 mt-2">Total balance</div>
+                        <h3 className="text-lg font-black text-slate-900">Performance Overview</h3>
+                        <p className="text-[10px] font-black uppercase text-slate-400 mt-1">Investment operations</p>
                       </div>
-                      <span className="text-amber-700 text-xs font-black">Live</span>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black border border-emerald-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Online
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase text-slate-500">Deposits</span>
+                          <ArrowDownRight className="h-4 w-4 text-emerald-600" />
+                        </div>
+                        <div className="text-2xl font-black text-slate-900 mt-2">PKR {Number(analytics.totalDeposited || 0).toLocaleString()}</div>
+                        <div className="text-[10px] font-black text-slate-400 mt-1">{deposits.length} records</div>
+                      </div>
+                      <div className="rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase text-slate-500">Withdrawals</span>
+                          <ArrowUpRight className="h-4 w-4 text-amber-600" />
+                        </div>
+                        <div className="text-2xl font-black text-slate-900 mt-2">PKR {Number(analytics.totalWithdrawn || 0).toLocaleString()}</div>
+                        <div className="text-[10px] font-black text-slate-400 mt-1">{withdrawals.length} records</div>
+                      </div>
+                    </div>
+
+                    <div className="mt-5">
+                      <div className="flex justify-between text-[10px] font-black text-slate-400 mb-1.5">
+                        <span>Platform Growth</span>
+                        <span>{users.length ? 'Healthy' : 'Waiting for data'}</span>
+                      </div>
+                      <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
+                        <div className="h-full rounded-full bg-gradient-to-r from-violet-500 via-indigo-500 to-emerald-500 transition-all duration-500" style={{ width: `${users.length ? Math.min(95, 30 + users.length * 5) : 4}%` }} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Admin Status */}
+                  <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className="text-lg font-black text-slate-900">Admin Status</h3>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-50 text-violet-700 text-[10px] font-black border border-violet-200">
+                        <ShieldCheck className="w-3 h-3" /> Operational
+                      </span>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase text-slate-500">Admin Accounts</span>
+                          <ShieldCheck className="h-4 w-4 text-violet-600" />
+                        </div>
+                        <div className="text-2xl font-black text-slate-900 mt-2">{analytics.activeAdmins}</div>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase text-slate-500">Pending Tasks</span>
+                          <Zap className="h-4 w-4 text-amber-600" />
+                        </div>
+                        <div className="text-2xl font-black text-slate-900 mt-2">{pendingDeposits.length + pendingWithdrawals.length}</div>
+                      </div>
+                      <div className="rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 p-4 text-white">
+                        <div className="text-[10px] font-black uppercase text-violet-200">Total Platform Value</div>
+                        <div className="text-xl font-black mt-1">PKR {Number(analytics.totalBalance + analytics.totalDeposited).toLocaleString()}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-[28px] bg-gradient-to-br from-[#da8a53] to-[#b76d46] p-[1px] shadow-sm">
-                  <div className="rounded-[27px] bg-white/95 p-5 h-full">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase text-slate-500">Pending Deposits</span>
-                      <span className="rounded-full bg-[#fff1e9] text-[#9b572b] p-2"><i className="fa-solid fa-landmark" /></span>
-                    </div>
-                    <div className="mt-4 flex items-end justify-between">
-                      <div>
-                        <div className="text-3xl font-black text-[#281f41]">{pendingDeposits.length}</div>
-                        <div className="text-[10px] font-black uppercase text-slate-500 mt-2">Awaiting review</div>
-                      </div>
-                      <span className="text-[#9b572b] text-xs font-black">{pendingDeposits.length > 0 ? 'Needs action' : 'Clear'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-[28px] bg-gradient-to-br from-[#9cc868] to-[#72af69] p-[1px] shadow-sm">
-                  <div className="rounded-[27px] bg-white/95 p-5 h-full">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase text-slate-500">Referral Network</span>
-                      <span className="rounded-full bg-[#edf9e8] text-[#426d36] p-2"><i className="fa-solid fa-share-nodes" /></span>
-                    </div>
-                    <div className="mt-4 flex items-end justify-between">
-                      <div>
-                        <div className="text-3xl font-black text-[#281f41]">{analytics.referrals}</div>
-                        <div className="text-[10px] font-black uppercase text-slate-500 mt-2">Linked users</div>
-                      </div>
-                      <span className="text-[#426d36] text-xs font-black">{users.length ? 'Active' : 'No data'}</span>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section className="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-5">
-                <div className="rounded-[28px] bg-white border border-slate-200 p-5 shadow-sm">
+                {/* Recent Activity */}
+                <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
                   <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-black text-[#281f41]">Performance Overview</h3>
-                      <p className="text-[10px] font-black uppercase text-slate-500 mt-1">Investment operations</p>
-                    </div>
-                    <span className="rounded-full bg-green-50 px-3 py-1 text-[10px] font-black text-emerald-700">online</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl bg-[#eefaf2] p-4 border border-emerald-100">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase text-slate-500">Deposits</span>
-                        <i className="fa-solid fa-arrow-down text-emerald-700" />
-                      </div>
-                      <div className="text-2xl font-black text-[#234833] mt-3">PKR {Number(analytics.totalDeposited || 0).toLocaleString()}</div>
-                      <div className="text-[10px] font-black text-slate-500 mt-1">{deposits.length} records</div>
-                    </div>
-                    <div className="rounded-2xl bg-[#fff5ea] p-4 border border-amber-100">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase text-slate-500">Withdrawals</span>
-                        <i className="fa-solid fa-arrow-up text-amber-700" />
-                      </div>
-                      <div className="text-2xl font-black text-[#4a3421] mt-3">PKR {Number(analytics.totalWithdrawn || 0).toLocaleString()}</div>
-                      <div className="text-[10px] font-black text-slate-500 mt-1">{withdrawals.length} records</div>
-                    </div>
-                  </div>
-
-                  <div className="mt-5">
-                    <div className="h-3 rounded-full bg-slate-100 overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-lime-400" style={{ width: `${users.length ? 78 : 4}%` }} />
-                    </div>
-                    <div className="flex justify-between mt-2 text-[10px] font-black text-slate-500">
-                      <span>Growth</span>
-                      <span>{users.length ? 'Healthy' : 'Waiting for data'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-[28px] bg-white border border-slate-200 p-5 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-black text-[#281f41]">Admin Status</h3>
-                    <span className="rounded-full bg-[#d6f6da] text-[#275b2a] px-3 py-1 text-[10px] font-black">Operational</span>
+                    <h3 className="text-lg font-black text-slate-900">Recent Activity</h3>
+                    <span className="text-[10px] font-black uppercase text-slate-400">Last 24h</span>
                   </div>
                   <div className="space-y-3">
-                    <div className="rounded-2xl bg-[#f8fbf6] p-4 border border-slate-100">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase text-slate-500">Admin Accounts</span>
-                        <i className="fa-solid fa-shield-halved text-[#1d6d4e]" />
+                    {transactions.length > 0 ? transactions.slice(0, 6).map((tx) => (
+                      <div key={tx.id} className="flex items-center justify-between border-b border-slate-100 pb-3 last:border-0">
+                        <div className="flex items-center gap-3">
+                          <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${tx.type === 'deposit' ? 'bg-emerald-50 text-emerald-600' : tx.type === 'withdraw' ? 'bg-rose-50 text-rose-600' : 'bg-violet-50 text-violet-600'}`}>
+                            {tx.type === 'deposit' ? <ArrowDownRight className="h-4 w-4" /> : tx.type === 'withdraw' ? <ArrowUpRight className="h-4 w-4" /> : <Activity className="h-4 w-4" />}
+                          </div>
+                          <div>
+                            <div className="font-black text-sm text-slate-900">{tx.userName || 'User'} • {tx.description}</div>
+                            <div className="text-[10px] font-bold text-slate-400">{tx.date || '—'}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black text-slate-700">PKR {Number(tx.amount || 0).toLocaleString()}</span>
+                          {statusBadge(tx.status)}
+                        </div>
                       </div>
-                      <div className="text-2xl font-black text-[#184c36] mt-2">{analytics.activeAdmins}</div>
-                    </div>
-                    <div className="rounded-2xl bg-[#fffdf7] p-4 border border-slate-100">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase text-slate-500">Pending Tasks</span>
-                        <i className="fa-solid fa-bolt text-amber-700" />
+                    )) : (
+                      <div className="rounded-xl bg-slate-50 border border-dashed border-slate-300 p-6 text-sm font-black text-slate-400 text-center">
+                        No recent activity yet. User actions and finance records will appear here.
                       </div>
-                      <div className="text-2xl font-black text-[#51441d] mt-2">{pendingDeposits.length + pendingWithdrawals.length}</div>
-                    </div>
+                    )}
                   </div>
                 </div>
-              </section>
+              </div>
+            )}
 
-              <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-black text-[#281f41]">Recent Activity</h3>
-                  <span className="text-[10px] font-black uppercase text-slate-500">Last 24h</span>
+            {/* ─── USERS ─── */}
+            {section === 'users' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+                <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900">User Management</h2>
+                    <p className="text-xs font-bold text-slate-400 mt-0.5">Registered users on the platform</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                      <Search className="h-4 w-4 text-slate-400" />
+                      <input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search users..."
+                        className="w-40 outline-none bg-transparent text-xs font-bold text-slate-600 placeholder:text-slate-400"
+                      />
+                    </div>
+                    <button className="px-4 py-2 rounded-xl bg-slate-900 text-white font-black text-xs hover:bg-slate-800 transition-all">
+                      Filter
+                    </button>
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  {transactions.length > 0 ? transactions.slice(0, 6).map((tx) => (
-                    <div key={tx.id} className="flex items-center justify-between border-b border-slate-100 pb-2 last:border-0">
-                      <div>
-                        <div className="font-black text-sm text-[#281f41]">{tx.userName || 'User'} • {tx.description}</div>
-                        <div className="text-[10px] font-bold text-slate-500">{tx.date || '—'}</div>
+
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-left">
+                    <thead>
+                      <tr className="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                        <th className="py-3 px-5">User</th>
+                        <th className="py-3 px-5">Role</th>
+                        <th className="py-3 px-5">Wallet</th>
+                        <th className="py-3 px-5">Referral</th>
+                        <th className="py-3 px-5">Deposits</th>
+                        <th className="py-3 px-5">Withdrawals</th>
+                        <th className="py-3 px-5">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {us.map((item) => (
+                        <tr key={item.uid} className="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
+                          <td className="py-4 px-5">
+                            <div className="flex items-center gap-3">
+                              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white font-black text-sm shadow-sm">
+                                {getInitials(item.username)}
+                              </span>
+                              <div>
+                                <div className="font-black text-sm text-slate-900">{item.username}</div>
+                                <div className="text-[10px] font-bold text-slate-400">{item.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-5">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black border ${
+                              item.role === 'admin'
+                                ? 'bg-violet-50 text-violet-700 border-violet-200'
+                                : 'bg-slate-100 text-slate-600 border-slate-200'
+                            }`}>
+                              {item.role === 'admin' && <ShieldCheck className="w-3 h-3" />}
+                              {item.role || 'user'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-5 font-black text-sm text-slate-900">Rs {Number(item.balance || 0).toLocaleString()}</td>
+                          <td className="py-4 px-5">
+                            <span className="font-mono font-black text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg">{item.referralCode}</span>
+                          </td>
+                          <td className="py-4 px-5 text-xs font-bold text-slate-600">Rs {Number(item.totalDeposited || 0).toLocaleString()}</td>
+                          <td className="py-4 px-5 text-xs font-bold text-slate-600">Rs {Number(item.totalWithdrawn || 0).toLocaleString()}</td>
+                          <td className="py-4 px-5">
+                            <div className="flex flex-wrap gap-1.5">
+                              <button className="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-black hover:bg-slate-200 transition-all">
+                                <Eye className="w-3 h-3 inline mr-1" />Profile
+                              </button>
+                              <button
+                                onClick={() => changeUserRole(item.uid, item.role === 'admin' ? 'user' : 'admin')}
+                                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-black transition-all ${
+                                  item.role === 'admin'
+                                    ? 'bg-rose-50 text-rose-600 hover:bg-rose-100'
+                                    : 'bg-violet-50 text-violet-600 hover:bg-violet-100'
+                                }`}
+                              >
+                                {item.role === 'admin' ? <UserX className="w-3 h-3 inline mr-1" /> : <UserCheck className="w-3 h-3 inline mr-1" />}
+                                {item.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                              </button>
+                              <button className="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black hover:bg-emerald-100 transition-all">
+                                <Check className="w-3 h-3 inline mr-1" />Activate
+                              </button>
+                              <button className="px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-600 text-[10px] font-black hover:bg-amber-100 transition-all">
+                                <Ban className="w-3 h-3 inline mr-1" />Suspend
+                              </button>
+                              <button className="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-[10px] font-black hover:bg-rose-100 transition-all">
+                                <Trash2 className="w-3 h-3 inline mr-1" />Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* ─── DEPOSITS ─── */}
+            {section === 'deposits' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+                <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900">Deposit Management</h2>
+                    <p className="text-xs font-bold text-slate-400 mt-0.5">Review and process user deposits</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-black border border-amber-200">
+                    <Clock3 className="w-3 h-3" /> {pendingDeposits.length} Pending
+                  </span>
+                </div>
+                <div className="p-5 space-y-3">
+                  {deposits.length > 0 ? deposits.map((tx) => (
+                    <div key={tx.id} className="border border-slate-100 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 hover:border-slate-200 hover:shadow-sm transition-all">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                          <ArrowDownRight className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <div className="font-black text-sm text-slate-900">{tx.userName || 'Unknown User'}</div>
+                          <div className="text-[10px] font-bold text-slate-400">{tx.date || '—'}</div>
+                          <div className="text-xs font-black text-slate-600 mt-1">
+                            PKR {Number(tx.amount || 0).toLocaleString()} • {tx.method || 'Unknown'} • <span className="font-mono">{tx.txid || 'TXN'}</span>
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-xs font-black px-2 py-1 rounded-full bg-slate-100 text-slate-700">{tx.type}</span>
+                      <div className="flex items-center gap-2">
+                        {statusBadge(tx.status)}
+                        {tx.status === 'pending' && (
+                          <>
+                            <button
+                              onClick={() => approveDeposit(tx)}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white font-black text-xs hover:bg-emerald-700 shadow-sm shadow-emerald-600/20 transition-all"
+                            >
+                              <Check className="w-3.5 h-3.5" /> Approve
+                            </button>
+                            <button
+                              onClick={() => rejectDeposit(tx)}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 text-white font-black text-xs hover:bg-rose-700 shadow-sm shadow-rose-600/20 transition-all"
+                            >
+                              <Ban className="w-3.5 h-3.5" /> Reject
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   )) : (
-                    <div className="rounded-2xl bg-slate-50 border border-dashed border-slate-300 p-4 text-sm font-black text-slate-500">
-                      No recent activity yet. User actions and finance records will appear here.
+                    <div className="rounded-xl bg-slate-50 border border-dashed border-slate-300 p-8 text-sm font-black text-slate-400 text-center">
+                      No deposits found yet.
                     </div>
                   )}
                 </div>
-              </section>
-            </div>
-          )}
-
-          {section === 'users' && (
-            <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-                <div>
-                  <h2 className="text-2xl font-black text-[#281f41]">User Management</h2>
-                  <p className="text-xs font-bold text-slate-500">Registered users</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search users"
-                    className="border border-slate-200 rounded-2xl px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-[#0098ff]"
-                  />
-<button className="admin-filter-button px-4 py-2 rounded-2xl bg-[#281f41] text-white font-black text-xs">Filter</button>
-                </div>
               </div>
+            )}
 
-              <div className="admin-table-wrap overflow-x-auto rounded-[24px] border border-slate-100 bg-white shadow-sm">
-                <table className="admin-user-table min-w-full text-left">
-                  <thead>
-                    <tr className="text-[10px] font-black uppercase text-slate-500">
-                      <th className="pb-3 px-4">User</th>
-                      <th className="pb-3 px-4">Role</th>
-                      <th className="pb-3 px-4">Wallet</th>
-                      <th className="pb-3 px-4">Referral</th>
-                      <th className="pb-3 px-4">Deposit History</th>
-                      <th className="pb-3 px-4">Withdrawal History</th>
-                      <th className="pb-3 px-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {us.map((item) => (
-                      <tr key={item.uid} className="admin-user-row border-t border-slate-100">
-                        <td className="py-4 px-4">
-                          <div className="user-cell flex items-center gap-3">
-                            <span className="avatar-badge inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-lime-500 text-white font-black shadow-sm">{(item.username || 'U').slice(0, 1).toUpperCase()}</span>
-                            <div>
-                              <div className="font-black text-sm text-[#281f41]">{item.username}</div>
-                              <div className="text-[10px] font-bold text-slate-500">{item.email}</div>
-                            </div>
+            {/* ─── WITHDRAWALS ─── */}
+            {section === 'withdrawals' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+                <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900">Withdrawal Management</h2>
+                    <p className="text-xs font-bold text-slate-400 mt-0.5">Review and process user withdrawals</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 text-[10px] font-black border border-rose-200">
+                    <Clock3 className="w-3 h-3" /> {pendingWithdrawals.length} Pending
+                  </span>
+                </div>
+                <div className="p-5 space-y-3">
+                  {withdrawals.length > 0 ? withdrawals.map((tx) => (
+                    <div key={tx.id} className="border border-slate-100 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 hover:border-slate-200 hover:shadow-sm transition-all">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                          <ArrowUpRight className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <div className="font-black text-sm text-slate-900">{tx.userName || 'Unknown User'}</div>
+                          <div className="text-[10px] font-bold text-slate-400">{tx.date || '—'}</div>
+                          <div className="text-xs font-black text-slate-600 mt-1">
+                            PKR {Number(tx.amount || 0).toLocaleString()} • {tx.method || 'Unknown'} • <span className="font-mono">{tx.accountNumber || '—'}</span>
                           </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="admin-role-badge px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[10px] font-black">
-                            {item.role || 'user'}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4 font-black text-sm">Rs {Number(item.balance || 0).toLocaleString()}</td>
-                        <td className="py-4 px-4 font-black text-sm">{item.referralCode}</td>
-                        <td className="py-4 px-4 text-[11px] font-bold text-slate-500">{item.totalDeposited || 0}</td>
-                        <td className="py-4 px-4 text-[11px] font-bold text-slate-500">{item.totalWithdrawn || 0}</td>
-                        <td className="py-4 px-4">
-                          <div className="flex flex-wrap gap-2">
-                            <button className="admin-table-button admin-small-button px-2 py-1 rounded-lg bg-slate-100 text-slate-700 text-[10px] font-black">Profile</button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {statusBadge(tx.status)}
+                        {tx.status === 'pending' && (
+                          <>
                             <button
-                              onClick={() => changeUserRole(item.uid, item.role === 'admin' ? 'user' : 'admin')}
-                              className="admin-table-button admin-row-action admin-small-button px-2 py-1 rounded-lg bg-[#0098ff]/10 text-[#0098ff] text-[10px] font-black"
+                              onClick={() => approveWithdrawal(tx)}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white font-black text-xs hover:bg-emerald-700 shadow-sm shadow-emerald-600/20 transition-all"
                             >
-                              {item.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                              <Check className="w-3.5 h-3.5" /> Approve
                             </button>
-                            <button className="admin-table-button admin-small-button px-2 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-[10px] font-black">Activate</button>
-                            <button className="admin-table-button admin-small-button px-2 py-1 rounded-lg bg-amber-100 text-amber-700 text-[10px] font-black">Suspend</button>
-                            <button className="admin-table-button admin-small-button px-2 py-1 rounded-lg bg-rose-100 text-rose-700 text-[10px] font-black">Delete</button>
-                          </div>
-                        </td>
+                            <button
+                              onClick={() => rejectWithdrawal(tx)}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 text-white font-black text-xs hover:bg-rose-700 shadow-sm shadow-rose-600/20 transition-all"
+                            >
+                              <Ban className="w-3.5 h-3.5" /> Reject
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="rounded-xl bg-slate-50 border border-dashed border-slate-300 p-8 text-sm font-black text-slate-400 text-center">
+                      No withdrawals found yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ─── REFERRAL ─── */}
+            {section === 'referral' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+                <h2 className="text-xl font-black text-slate-900">Referral Management</h2>
+                <p className="text-xs font-bold text-slate-400 mt-0.5">Track and manage the referral network</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                  <div className="rounded-xl bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-100 p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-500">Referral Statistics</span>
+                      <TrendingUp className="h-4 w-4 text-violet-600" />
+                    </div>
+                    <div className="text-3xl font-black text-slate-900 mt-2">{users.length}</div>
+                    <div className="text-[10px] font-black text-slate-400 mt-1">Total users in network</div>
+                  </div>
+                  <div className="rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-500">Top Referrers</span>
+                      <Award className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <div className="text-3xl font-black text-slate-900 mt-2">—</div>
+                    <div className="text-[10px] font-black text-slate-400 mt-1">Leaderboard coming soon</div>
+                  </div>
+                  <div className="rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-500">Referral Rewards</span>
+                      <Award className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <div className="text-3xl font-black text-slate-900 mt-2">18%</div>
+                    <div className="text-[10px] font-black text-slate-400 mt-1">Tier 1 commission rate</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── TRANSACTIONS ─── */}
+            {section === 'transactions' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+                <div className="p-5 sm:p-6 border-b border-slate-100">
+                  <h2 className="text-xl font-black text-slate-900">All Transactions</h2>
+                  <p className="text-xs font-bold text-slate-400 mt-0.5">Complete transaction history across all users</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-left">
+                    <thead>
+                      <tr className="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                        <th className="py-3 px-5">User</th>
+                        <th className="py-3 px-5">Type</th>
+                        <th className="py-3 px-5">Amount</th>
+                        <th className="py-3 px-5">Method</th>
+                        <th className="py-3 px-5">Date</th>
+                        <th className="py-3 px-5">Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {transactions.length > 0 ? transactions.slice(0, 20).map((tx) => (
+                        <tr key={tx.id} className="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
+                          <td className="py-3 px-5 font-black text-sm text-slate-900">{tx.userName || 'Unknown'}</td>
+                          <td className="py-3 px-5">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black border ${
+                              tx.type === 'deposit' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                              tx.type === 'withdraw' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                              tx.type === 'yield' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                              tx.type === 'referral' ? 'bg-violet-50 text-violet-700 border-violet-200' :
+                              'bg-slate-100 text-slate-600 border-slate-200'
+                            }`}>
+                              {tx.type}
+                            </span>
+                          </td>
+                          <td className="py-3 px-5 font-black text-sm text-slate-900">PKR {Number(tx.amount || 0).toLocaleString()}</td>
+                          <td className="py-3 px-5 text-xs font-bold text-slate-600">{tx.method || '—'}</td>
+                          <td className="py-3 px-5 text-xs font-bold text-slate-500">{tx.date || '—'}</td>
+                          <td className="py-3 px-5">{statusBadge(tx.status)}</td>
+                        </tr>
+                      )) : (
+                        <tr>
+                          <td colSpan={6} className="py-8 text-center text-sm font-black text-slate-400">No transactions found.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </section>
-          )}
+            )}
 
-          {section === 'deposits' && (
-            <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-2xl font-black text-[#281f41]">Deposit Management</h2>
-                <span className="text-[10px] font-black uppercase text-slate-500">{pendingDeposits.length} Pending</span>
-              </div>
-
-              <div className="space-y-3">
-                {deposits.map((tx) => (
-                  <div key={tx.id} className="border border-slate-100 rounded-2xl p-4 flex flex-wrap justify-between gap-4">
-                    <div>
-                      <div className="font-black text-sm text-[#281f41]">{tx.userName || 'Unknown User'}</div>
-                      <div className="text-[10px] font-bold text-slate-500">{tx.date || '—'}</div>
-                      <div className="text-xs font-black mt-2">PKR {Number(tx.amount || 0).toLocaleString()} • {tx.method || 'Unknown'} • {tx.txid || 'TXN'}</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black px-2 py-1 rounded-full bg-slate-100 text-slate-700">{tx.status}</span>
-                      <button onClick={() => approveDeposit(tx)} className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-black text-xs">Approve</button>
-                      <button onClick={() => rejectDeposit(tx)} className="px-4 py-2 rounded-xl bg-rose-600 text-white font-black text-xs">Reject</button>
-                    </div>
+            {/* ─── NOTIFICATIONS ─── */}
+            {section === 'notifications' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+                <h2 className="text-xl font-black text-slate-900">Send Notification</h2>
+                <p className="text-xs font-bold text-slate-400 mt-0.5">Send a notification to a specific user or all users</p>
+                <div className="mt-5 space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-black uppercase text-slate-500 mb-1.5">Recipient</label>
+                    <select className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-violet-500 bg-white">
+                      <option value="all">All Users</option>
+                      {users.map((u) => (
+                        <option key={u.uid} value={u.uid}>@{u.username} ({u.email})</option>
+                      ))}
+                    </select>
                   </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {section === 'withdrawals' && (
-            <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-2xl font-black text-[#281f41]">Withdrawal Management</h2>
-                <span className="text-[10px] font-black uppercase text-slate-500">{pendingWithdrawals.length} Pending</span>
-              </div>
-
-              <div className="space-y-3">
-                {withdrawals.map((tx) => (
-                  <div key={tx.id} className="border border-slate-100 rounded-2xl p-4 flex flex-wrap justify-between gap-4">
-                    <div>
-                      <div className="font-black text-sm text-[#281f41]">{tx.userName || 'Unknown User'}</div>
-                      <div className="text-[10px] font-bold text-slate-500">{tx.date || '—'}</div>
-                      <div className="text-xs font-black mt-2">PKR {Number(tx.amount || 0).toLocaleString()} • {tx.method || 'Unknown'} • {tx.accountNumber || '—'}</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black px-2 py-1 rounded-full bg-slate-100 text-slate-700">{tx.status}</span>
-                      <button onClick={() => approveWithdrawal(tx)} className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-black text-xs">Approve</button>
-                      <button onClick={() => rejectWithdrawal(tx)} className="px-4 py-2 rounded-xl bg-rose-600 text-white font-black text-xs">Reject</button>
-                    </div>
+                  <div>
+                    <label className="block text-[10px] font-black uppercase text-slate-500 mb-1.5">Message</label>
+                    <textarea
+                      className="w-full min-h-[150px] rounded-xl border border-slate-200 p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-violet-500"
+                      placeholder="Write your notification message here..."
+                    />
                   </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {section === 'referral' && (
-            <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-              <h2 className="text-2xl font-black text-[#281f41]">Referral Management</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-                <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <div className="text-[10px] font-black uppercase text-slate-500">Referral Statistics</div>
-                  <div className="text-2xl font-black text-[#281f41] mt-2">{users.length}</div>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <div className="text-[10px] font-black uppercase text-slate-500">Top Referrers</div>
-                  <div className="text-2xl font-black text-[#281f41] mt-2">—</div>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <div className="text-[10px] font-black uppercase text-slate-500">Referral Rewards</div>
-                  <div className="text-2xl font-black text-[#281f41] mt-2">Configured</div>
+                  <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black text-xs shadow-lg shadow-indigo-600/20 hover:brightness-110 transition-all">
+                    <Send className="h-4 w-4" /> Send Notification
+                  </button>
                 </div>
               </div>
-            </section>
-          )}
+            )}
 
-          {section === 'notifications' && (
-            <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-              <h2 className="text-2xl font-black text-[#281f41]">Notifications</h2>
-              <div className="mt-4">
-                <textarea className="w-full min-h-[150px] border border-slate-200 rounded-2xl p-4 text-sm font-bold outline-none" placeholder="Notification message" />
-                <button className="mt-3 px-5 py-3 rounded-2xl bg-[#0098ff] text-white font-black text-xs">Send Notification</button>
-              </div>
-            </section>
-          )}
-
-          {section === 'announcements' && (
-            <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-              <h2 className="text-2xl font-black text-[#281f41]">Announcements</h2>
-              <div className="mt-4">
-                <textarea className="w-full min-h-[150px] border border-slate-200 rounded-2xl p-4 text-sm font-bold outline-none" placeholder="Create announcement" />
-                <button className="mt-3 px-5 py-3 rounded-2xl bg-[#281f41] text-white font-black text-xs">Send to all users</button>
-              </div>
-            </section>
-          )}
-
-          {section === 'reports' && (
-            <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-              <h2 className="text-2xl font-black text-[#281f41]">Reports</h2>
-              <p className="text-sm font-bold text-slate-500 mt-3">Platform reports configuration is available for future expansion.</p>
-            </section>
-          )}
-
-          {section === 'settings' && (
-            <section className="rounded-[24px] bg-white border border-slate-200 p-5 shadow-sm">
-              <h2 className="text-2xl font-black text-[#281f41]">Settings</h2>
-              <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <div className="text-[10px] font-black uppercase text-slate-500">Platform Name</div>
-                  <div className="font-black text-sm mt-2">HNK Traders</div>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <div className="text-[10px] font-black uppercase text-slate-500">Maintenance Mode</div>
-                  <div className="font-black text-sm mt-2">Off</div>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <div className="text-[10px] font-black uppercase text-slate-500">Payment Methods</div>
-                  <div className="font-black text-sm mt-2">EasyPaisa, JazzCash, Bank Transfer</div>
+            {/* ─── ANNOUNCEMENTS ─── */}
+            {section === 'announcements' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+                <h2 className="text-xl font-black text-slate-900">Create Announcement</h2>
+                <p className="text-xs font-bold text-slate-400 mt-0.5">Broadcast an announcement to all users</p>
+                <div className="mt-5 space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-black uppercase text-slate-500 mb-1.5">Announcement Title</label>
+                    <input
+                      type="text"
+                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-violet-500"
+                      placeholder="e.g. New Plan Launch!"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black uppercase text-slate-500 mb-1.5">Announcement Content</label>
+                    <textarea
+                      className="w-full min-h-[150px] rounded-xl border border-slate-200 p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-violet-500"
+                      placeholder="Write your announcement here..."
+                    />
+                  </div>
+                  <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 text-white font-black text-xs hover:bg-slate-800 transition-all">
+                    <Megaphone className="h-4 w-4" /> Send to all users
+                  </button>
                 </div>
               </div>
-            </section>
-          )}
+            )}
+
+            {/* ─── REPORTS ─── */}
+            {section === 'reports' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+                <h2 className="text-xl font-black text-slate-900">Reports</h2>
+                <p className="text-sm font-bold text-slate-400 mt-3">Platform reports configuration is available for future expansion.</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-5 text-center">
+                    <FileText className="h-8 w-8 text-slate-400 mx-auto" />
+                    <div className="font-black text-sm text-slate-700 mt-2">Daily Report</div>
+                    <div className="text-[10px] font-bold text-slate-400">Coming soon</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-5 text-center">
+                    <BarChart3 className="h-8 w-8 text-slate-400 mx-auto" />
+                    <div className="font-black text-sm text-slate-700 mt-2">Monthly Report</div>
+                    <div className="text-[10px] font-bold text-slate-400">Coming soon</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-5 text-center">
+                    <Database className="h-8 w-8 text-slate-400 mx-auto" />
+                    <div className="font-black text-sm text-slate-700 mt-2">Export Data</div>
+                    <div className="text-[10px] font-bold text-slate-400">Coming soon</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── ANALYTICS ─── */}
+            {section === 'analytics' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+                <h2 className="text-xl font-black text-slate-900">Analytics</h2>
+                <p className="text-xs font-bold text-slate-400 mt-0.5">Platform performance analytics</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                  <div className="rounded-xl bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-100 p-5">
+                    <div className="text-[10px] font-black uppercase text-slate-500">Total Deposits</div>
+                    <div className="text-2xl font-black text-slate-900 mt-1">PKR {Number(analytics.totalDeposited || 0).toLocaleString()}</div>
+                    <div className="text-[10px] font-black text-emerald-600 mt-1">{deposits.length} transactions</div>
+                  </div>
+                  <div className="rounded-xl bg-gradient-to-br from-rose-50 to-orange-50 border border-rose-100 p-5">
+                    <div className="text-[10px] font-black uppercase text-slate-500">Total Withdrawals</div>
+                    <div className="text-2xl font-black text-slate-900 mt-1">PKR {Number(analytics.totalWithdrawn || 0).toLocaleString()}</div>
+                    <div className="text-[10px] font-black text-rose-600 mt-1">{withdrawals.length} transactions</div>
+                  </div>
+                  <div className="rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-5">
+                    <div className="text-[10px] font-black uppercase text-slate-500">Net Flow</div>
+                    <div className="text-2xl font-black text-slate-900 mt-1">PKR {Number((analytics.totalDeposited || 0) - (analytics.totalWithdrawn || 0)).toLocaleString()}</div>
+                    <div className="text-[10px] font-black text-emerald-600 mt-1">Platform liquidity</div>
+                  </div>
+                  <div className="rounded-xl bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-100 p-5">
+                    <div className="text-[10px] font-black uppercase text-slate-500">Approval Rate</div>
+                    <div className="text-2xl font-black text-slate-900 mt-1">
+                      {deposits.length > 0 ? Math.round((approvedDeposits.length / deposits.length) * 100) : 0}%
+                    </div>
+                    <div className="text-[10px] font-black text-amber-600 mt-1">{approvedDeposits.length} approved</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SETTINGS ─── */}
+            {section === 'settings' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+                <h2 className="text-xl font-black text-slate-900">Platform Settings</h2>
+                <p className="text-xs font-bold text-slate-400 mt-0.5">Configure platform-wide settings</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-500">Platform Name</span>
+                      <Globe className="h-4 w-4 text-violet-600" />
+                    </div>
+                    <div className="font-black text-lg text-slate-900 mt-2">Hens Bedo</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-500">Maintenance Mode</span>
+                      <Lock className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <div className="font-black text-lg text-slate-900 mt-2">Off</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-500">Payment Methods</span>
+                      <CreditCard className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <div className="font-black text-sm text-slate-900 mt-2">EasyPaisa, JazzCash, Bank Transfer</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-slate-500">Referral Commission</span>
+                      <TrendingUp className="h-4 w-4 text-indigo-600" />
+                    </div>
+                    <div className="font-black text-lg text-slate-900 mt-2">18% / 3% / 1%</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SUPPORT ─── */}
+            {section === 'support' && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+                <h2 className="text-xl font-black text-slate-900">Support Center</h2>
+                <p className="text-xs font-bold text-slate-400 mt-0.5">Manage support tickets and user queries</p>
+                <div className="mt-6 rounded-xl bg-slate-50 border border-dashed border-slate-300 p-8 text-center">
+                  <MessageSquare className="h-10 w-10 text-slate-300 mx-auto" />
+                  <div className="font-black text-sm text-slate-500 mt-3">No support tickets yet</div>
+                  <div className="text-[10px] font-bold text-slate-400 mt-1">User support requests will appear here</div>
+                </div>
+              </div>
+            )}
+          </div>
         </main>
       </div>
     </div>

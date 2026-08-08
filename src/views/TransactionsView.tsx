@@ -20,7 +20,7 @@ export const TransactionsView: React.FC<TransactionsViewProps> = ({
     if (activeFilter === 'all') return true;
     if (activeFilter === 'Completed') return tx.status === 'completed';
     if (activeFilter === 'Processing') return tx.status === 'pending';
-    if (activeFilter === 'Canceled') return tx.status === 'failed';
+    if (activeFilter === 'Canceled') return tx.status === 'rejected';
     return true;
   });
 

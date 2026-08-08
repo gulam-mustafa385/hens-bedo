@@ -14,7 +14,7 @@ export const DocumentsView: React.FC = () => {
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">Verified Official Documents</h1>
           <p className="text-sm font-medium text-slate-400 max-w-lg">
-            Vertex Invest is officially registered with government regulators and SECP corporate governance standards.
+            Hens Bedo is officially registered with government regulators and SECP corporate governance standards.
           </p>
         </div>
       </div>
@@ -71,7 +71,7 @@ export const DocumentsView: React.FC = () => {
             </div>
             <h3 className="text-lg font-black text-slate-900 dark:text-white">Android Mobile App</h3>
             <p className="text-xs text-slate-500 font-medium mt-1">
-              Download the official Vertex Invest Android APK for instant mobile wallet notifications.
+              Download the official Hens Bedo Android APK for instant mobile wallet notifications.
             </p>
           </div>
           <a

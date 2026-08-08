@@ -18,7 +18,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onCl
   const [messages, setMessages] = useState<Array<{ sender: 'ai' | 'user'; text: string }>>([
     {
       sender: 'ai',
-      text: `Hello ${user?.username || 'Investor'}! I am **Vertex AI**, your intelligent portfolio advisor. Based on your current wallet balance (Rs ${user?.balance.toLocaleString()}) and active plans (${investments.length}), how can I assist your strategy today?`,
+      text: `Hello ${user?.username || 'Investor'}! I am **Hens Bedo AI**, your intelligent portfolio advisor. Based on your current wallet balance (Rs ${user?.balance.toLocaleString()}) and active plans (${investments.length}), how can I assist your strategy today?`,
     },
   ]);
 
@@ -60,7 +60,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onCl
           } else if (query.toLowerCase().includes('referral') || query.toLowerCase().includes('team')) {
             reply = `Your Tier 1 referral bonus yields **18%** of every plan purchase made by your network! Sharing your link **${user?.referralCode}** is the fastest way to compound capital without extra principal.`;
           } else {
-            reply = `Vertex Invest uses institutional risk-weighted pools to generate consistent daily yields across all 14 plan tiers. Let me know if you need a yield breakdown for a specific target!`;
+            reply = `Hens Bedo uses institutional risk-weighted pools to generate consistent daily yields across all 14 plan tiers. Let me know if you need a yield breakdown for a specific target!`;
           }
           setMessages((prev) => [...prev, { sender: 'ai', text: reply }]);
         }, 800);
@@ -70,7 +70,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onCl
         ...prev,
         {
           sender: 'ai',
-          text: `Vertex AI Strategy Advice: To maximize your 77-day cycle, re-investing your daily payouts into Plan 01 or Plan 02 builds compounding velocity!`,
+          text: `Hens Bedo AI Strategy Advice: To maximize your 77-day cycle, re-investing your daily payouts into Plan 01 or Plan 02 builds compounding velocity!`,
         },
       ]);
     } finally {
@@ -96,7 +96,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onCl
                 </div>
                 <div>
                   <h3 className="text-base font-bold flex items-center gap-1.5">
-                    Vertex AI Assistant <Sparkles className="w-4 h-4 text-amber-400" />
+                    Hens Bedo AI Assistant <Sparkles className="w-4 h-4 text-amber-400" />
                   </h3>
                   <p className="text-[11px] text-slate-400 font-medium">Smart Financial & Yield Analytics</p>
                 </div>
@@ -167,7 +167,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onCl
                   type="text"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Ask Vertex AI anything about plans or ROI..."
+                  placeholder="Ask Hens Bedo AI anything about plans or ROI..."
                   className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                 />
                 <button

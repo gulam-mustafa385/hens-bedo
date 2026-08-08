@@ -81,7 +81,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
           <p className="text-[13px] font-semibold text-white/90 mt-1 max-w-[260px] mx-auto leading-tight">
             {mode === 'login'
               ? 'Login to continue your investment journey'
-              : 'Join Vertex Invest & start earning daily compound yields'}
+              : 'Join Hens Bedo & start earning daily compound yields'}
           </p>
         </div>
 

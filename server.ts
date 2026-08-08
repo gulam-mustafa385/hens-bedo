@@ -17,12 +17,12 @@ async function startServer() {
 
       if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
         return res.json({
-          reply: `[Vertex AI Advice] Hello ${userContext?.username || 'Investor'}! Based on your current balance of Rs ${userContext?.balance?.toLocaleString() || '14,850'}, enrolling in Plan 02 (Growth Tier) or Plan 03 (Premium Growth) gives a steady daily ROI with 77-day compound distribution.`,
+          reply: `[Hens Bedo AI Advice] Hello ${userContext?.username || 'Investor'}! Based on your current balance of Rs ${userContext?.balance?.toLocaleString() || '14,850'}, enrolling in Plan 02 (Growth Tier) or Plan 03 (Premium Growth) gives a steady daily ROI with 77-day compound distribution.`,
         });
       }
 
       const ai = new GoogleGenAI({ apiKey });
-      const systemInstruction = `You are Vertex AI, an executive financial advisor for Vertex Invest (a premium fintech yield platform). Give concise, encouraging, professional investment allocation advice for users. User context: ${JSON.stringify(
+      const systemInstruction = `You are Hens Bedo AI, an executive financial advisor for Hens Bedo (a premium fintech yield platform). Give concise, encouraging, professional investment allocation advice for users. User context: ${JSON.stringify(
         userContext
       )}. Keep responses under 4 sentences with clear numbers.`;
 
@@ -34,19 +34,19 @@ async function startServer() {
         },
       });
 
-      const reply = response.text || "Vertex AI strategy analysis complete.";
+      const reply = response.text || "Hens Bedo AI strategy analysis complete.";
       return res.json({ reply });
     } catch (error) {
       console.error("AI Insights API Error:", error);
       return res.json({
-        reply: `Vertex AI Strategy Note: Allocating capital into 77-day compound plans yields predictable daily returns while earning up to 18% Tier-1 referral bonuses!`,
+        reply: `Hens Bedo AI Strategy Note: Allocating capital into 77-day compound plans yields predictable daily returns while earning up to 18% Tier-1 referral bonuses!`,
       });
     }
   });
 
   // Health check endpoint
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", name: "Vertex Invest Platform" });
+    res.json({ status: "ok", name: "Hens Bedo Platform" });
   });
 
   // Vite middleware for development

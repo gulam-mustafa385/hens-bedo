@@ -31,7 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
-              VERTEX <span className="text-blue-600 font-extrabold">INVEST</span>
+              HENS <span className="text-blue-600 font-extrabold">BEDO</span>
             </span>
             <span className="block text-[10px] font-bold text-slate-400 tracking-widest uppercase -mt-1">
               FINTECH CAPITAL V2
