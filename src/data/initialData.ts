@@ -216,6 +216,17 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
     maxAmount: 500000,
   },
   {
+    id: 'upaisa',
+    name: 'UPaisa Wallet',
+    type: 'upaisa',
+    icon: 'CreditCard',
+    accountTitle: 'Vertex UPAISA Portal',
+    accountNumber: '03201234567',
+    instructions: 'Receive easily using your UPaisa account.',
+    minAmount: 300,
+    maxAmount: 500000,
+  },
+  {
     id: 'usdt',
     name: 'Crypto USDT (TRC20 / BEP20)',
     type: 'crypto',

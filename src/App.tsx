@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { InvestProvider } from './context/InvestContext';
 import { AndroidShell } from './components/AndroidShell';
+import { AdminProtectedRoute } from './admin/AdminProtectedRoute';
 
 // View Pages
 import { DashboardView } from './views/DashboardView';
@@ -29,6 +30,12 @@ import { Transaction } from './types';
 
 const MainApp: React.FC = () => {
   const { user } = useAuth();
+
+  const isAdminPath = typeof window !== 'undefined' && window.location.pathname === '/admin';
+
+  if (isAdminPath) {
+    return <AdminProtectedRoute />;
+  }
 
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [isDepositOpen, setIsDepositOpen] = useState<boolean>(false);

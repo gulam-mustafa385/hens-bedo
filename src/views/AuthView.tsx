@@ -63,7 +63,12 @@ export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
   };
 
   return (
-    <div className="relative w-full max-w-[430px] mx-auto bg-white rounded-[44px] shadow-[0_26px_70px_rgba(20,39,72,0.15)] border-[8px] border-[#e6ebf1] overflow-hidden text-[#2c2550]">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.22, ease: 'easeOut' }}
+      className="relative w-full max-w-[430px] mx-auto bg-white rounded-[44px] shadow-[0_26px_70px_rgba(20,39,72,0.15)] border-[8px] border-[#e6ebf1] overflow-hidden text-[#2c2550]"
+    >
       {/* TOP HERO WAVE BANNER */}
       <div className="relative min-h-[295px] pt-8 px-6 text-center overflow-visible bg-gradient-to-br from-[#ff9d21] to-[#ff6f48] text-white">
         {/* Curved Bottom Wave Overlay */}
@@ -324,6 +329,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onSuccess }) => {
         {/* Teal Shape */}
         <div className="absolute -right-20 -bottom-10 w-56 h-56 rounded-tl-[80%] bg-gradient-to-tr from-[#22d6cf] to-[#7ff0df]" />
       </div>
-    </div>
+    </motion.div>
   );
 };

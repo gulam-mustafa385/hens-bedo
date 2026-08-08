@@ -1,1 +1,203 @@
 @import "tailwindcss";
+
+:root {
+  font-family: "Inter", "Poppins", "Segoe UI", Arial, sans-serif;
+  color: #243528;
+  background: #eefaf2;
+}
+
+body {
+  margin: 0;
+  background: #eefaf2;
+  font-family: "Inter", "Poppins", "Segoe UI", Arial, sans-serif;
+}
+
+.admin-panel-root {
+  font-family: "Inter", "Poppins", "Segoe UI", Arial, sans-serif;
+}
+
+.admin-panel-layout {
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  position: relative;
+}
+
+.admin-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 62%);
+  filter: blur(20px);
+}
+
+.admin-main {
+  background:
+    radial-gradient(circle at 84% 2%, rgba(219, 244, 255, 0.88), transparent 24%),
+    radial-gradient(circle at 12% 105%, rgba(220, 255, 231, 0.94), transparent 28%),
+    #F8FAFC;
+}
+
+.admin-title {
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.admin-nav-button {
+  border: 1px solid transparent;
+  font-weight: 900;
+}
+
+.admin-nav-button.active {
+  border-color: rgba(255,255,255,0.42);
+  transform: translateX(2px);
+}
+
+.admin-nav-button:hover {
+  transform: translateY(-1px);
+}
+
+.admin-logout-button {
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.dashboard-summary-grid > div {
+  transform: translateY(0);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.dashboard-summary-grid > div:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 26px rgba(37, 99, 235, 0.14);
+}
+
+.admin-table-wrap {
+  overflow: hidden;
+}
+
+.admin-user-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-user-table thead tr {
+  background: linear-gradient(180deg, #EAF8FF, #F8FAFC);
+}
+
+.admin-user-table thead th {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.admin-user-row {
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.admin-user-row:hover {
+  background: linear-gradient(90deg, #EFFAFF, #F8FFF8);
+}
+
+.admin-user-row td {
+  vertical-align: middle;
+}
+
+.avatar-badge {
+  border: 2px solid #eefaf2;
+}
+
+.admin-role-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(36, 74, 40, 0.12);
+}
+
+.admin-row-action {
+  border: 1px solid rgba(10, 96, 91, 0.16);
+}
+
+.admin-row-action:hover {
+  background: linear-gradient(135deg, #d4f7dd, #e7ffe9);
+}
+
+.admin-small-button {
+  line-height: 1;
+  font-weight: 900;
+}
+
+.admin-filter-button,
+.admin-logout-button,
+.admin-topbar button {
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.admin-filter-button:hover,
+.admin-topbar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.14);
+}
+
+.admin-topbar button {
+  border: 1px solid rgba(52, 87, 54, 0.12);
+}
+
+.admin-topbar button:hover {
+  background: #effaf4;
+}
+
+.admin-table-button {
+  transition: all 180ms ease;
+}
+
+.admin-table-button:hover {
+  transform: scale(1.035);
+}
+
+.premium-button {
+  border-radius: 14px;
+  border: 1px solid transparent;
+  padding-inline: 1rem;
+  padding-block: 0.6rem;
+  font-weight: 900;
+  font-size: 11px;
+  line-height: 1;
+  transition: all 180ms ease;
+}
+
+.premium-button.primary {
+  background: linear-gradient(135deg, #2563EB, #3B82F6);
+  color: white;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.20);
+}
+
+.premium-button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.30);
+}
+
+.premium-button.secondary {
+  background: white;
+  color: #203b52;
+  border-color: #d7e3ea;
+}
+
+.premium-button.secondary:hover {
+  background: #ecf7f9;
+}
+
+.admin-icon-button {
+  transition: all 180ms ease;
+}
+
+.admin-icon-button:hover {
+  color: #2563EB;
+  border-color: #2563EB;
+ transform: translateY(-2px) scale(1.03);
+}
+
+.admin-profile {
+  background: linear-gradient(180deg, #ffffff, #eefaff);
+}
+

@@ -41,7 +41,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     <div className="space-y-4 pb-20 text-[#281f41]">
       {/* 1. HERO BANNER CARD */}
       <section className="relative rounded-[32px] bg-gradient-to-br from-[#ff9d21] via-[#ff7836] to-[#ff6644] text-white p-5 shadow-lg overflow-hidden">
-        {/* Subtle decorative bottom arc */}
         <div className="absolute -left-[10%] -right-[10%] -bottom-[35px] h-[65px] bg-[#f2f5f9] rounded-[50%/35%] pointer-events-none" />
 
         <div className="relative z-10 space-y-4 pb-4">
@@ -82,14 +81,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </p>
           </div>
 
-          {/* Quick Action Buttons on Hero */}
           <div className="flex gap-2 pt-1">
-            <button
-              onClick={onOpenDeposit}
-              className="flex-1 py-3 px-4 rounded-2xl bg-white text-[#281f41] font-black text-xs shadow-md hover:bg-slate-50 transition-all flex items-center justify-center gap-1.5"
-            >
-              <i className="fa-solid fa-plus text-[#0098ff]" /> Add Deposit
-            </button>
             <button
               onClick={onOpenWithdraw}
               className="flex-1 py-3 px-4 rounded-2xl bg-[#281f41] text-white font-black text-xs shadow-md hover:bg-[#1f1833] transition-all flex items-center justify-center gap-1.5"
@@ -138,216 +130,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </section>
       </div>
 
-      {/* 3. RECENT ACTIVITY ROWS */}
-      <section className="p-4 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-black text-[#281f41] uppercase tracking-wider">
-            Recent Activity
-          </h3>
-          <button
-            onClick={() => onNavigate('transactions')}
-            className="text-xs font-extrabold text-[#0098ff] hover:underline"
-          >
-            View All
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          {/* Deposits Row */}
-          <button
-            onClick={() => onNavigate('transactions')}
-            className="w-full p-3 rounded-2xl bg-[#f8fafc] border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <span className="w-9 h-9 rounded-xl bg-[#e6f4ff] text-[#0098ff] flex items-center justify-center">
-                <i className="fa fa-arrow-trend-up text-sm" />
-              </span>
-              <div className="text-left">
-                <strong className="text-xs font-black text-[#281f41] block">Deposits</strong>
-                <small className="text-[10px] font-bold text-slate-400 block">Active funds</small>
-              </div>
-            </div>
-            <div className="text-right">
-              <strong className="text-xs font-black text-[#281f41] block">
-                Rs {user?.totalDeposited.toLocaleString() || '0'}
-              </strong>
-              <small className="text-[10px] font-bold text-emerald-600 block">
-                <i className="fa fa-arrow-up" /> Pending Rs 0
-              </small>
-            </div>
-          </button>
-
-          {/* Withdraw Row */}
-          <button
-            onClick={onOpenWithdraw}
-            className="w-full p-3 rounded-2xl bg-[#f8fafc] border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <span className="w-9 h-9 rounded-xl bg-[#fff2e6] text-[#ff7049] flex items-center justify-center">
-                <i className="fa fa-shield-halved text-sm" />
-              </span>
-              <div className="text-left">
-                <strong className="text-xs font-black text-[#281f41] block">Withdraw</strong>
-                <small className="text-[10px] font-bold text-slate-400 block">Cash out records</small>
-              </div>
-            </div>
-            <div className="text-right">
-              <strong className="text-xs font-black text-[#281f41] block">
-                Rs {user?.totalWithdrawn.toLocaleString() || '0'}
-              </strong>
-              <small className="text-[10px] font-bold text-slate-400 block">
-                <i className="fa fa-arrow-up" /> Pending Rs {pendingWithdrawalsTotal}
-              </small>
-            </div>
-          </button>
-
-          {/* Team Row */}
-          <button
-            onClick={() => onNavigate('referrals')}
-            className="w-full p-3 rounded-2xl bg-[#f8fafc] border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <span className="w-9 h-9 rounded-xl bg-[#eef2ff] text-indigo-600 flex items-center justify-center">
-                <i className="fa fa-users text-sm" />
-              </span>
-              <div className="text-left">
-                <strong className="text-xs font-black text-[#281f41] block">Team</strong>
-                <small className="text-[10px] font-bold text-slate-400 block">0 members</small>
-              </div>
-            </div>
-            <div className="text-right">
-              <strong className="text-xs font-black text-[#281f41] block">
-                Rs {totalTeamDepositTotal.toLocaleString()}
-              </strong>
-              <small className="text-[10px] font-bold text-indigo-600 block">
-                <i className="fa fa-arrow-up" /> Team deposit
-              </small>
-            </div>
-          </button>
-
-          {/* Commission Row */}
-          <button
-            onClick={() => onNavigate('referrals')}
-            className="w-full p-3 rounded-2xl bg-[#f8fafc] border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <span className="w-9 h-9 rounded-xl bg-[#f3e8ff] text-purple-600 flex items-center justify-center">
-                <i className="fa fa-building-columns text-sm" />
-              </span>
-              <div className="text-left">
-                <strong className="text-xs font-black text-[#281f41] block">Commission</strong>
-                <small className="text-[10px] font-bold text-slate-400 block">Team earnings</small>
-              </div>
-            </div>
-            <div className="text-right">
-              <strong className="text-xs font-black text-[#281f41] block">
-                Rs {user?.totalYieldEarned.toLocaleString() || '0'}
-              </strong>
-              <small className="text-[10px] font-bold text-purple-600 block">
-                <i className="fa fa-arrow-up" /> Referral income
-              </small>
-            </div>
-          </button>
-        </div>
-      </section>
-
-      {/* 4. EXTRA ACTION PANELS */}
-      <div className="grid grid-cols-2 gap-3">
-        <button
-          onClick={() => onNavigate('tasks')}
-          className="p-3.5 rounded-2xl bg-[#281f41] text-white flex items-center gap-3 hover:bg-[#1e1732] transition-all shadow-md text-left"
-        >
-          <div className="w-9 h-9 rounded-xl bg-white/10 text-amber-300 flex items-center justify-center flex-shrink-0">
-            <i className="fa fa-gift text-base" />
-          </div>
-          <div>
-            <span className="text-[10px] text-slate-300 font-bold block">Team Reward</span>
-            <strong className="text-xs font-black text-white block">Check List</strong>
-          </div>
-        </button>
-
-        <button
-          onClick={onOpenCalculator}
-          className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center gap-3 hover:brightness-105 transition-all shadow-md text-left"
-        >
-          <div className="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center flex-shrink-0">
-            <i className="fa fa-money-bill text-base" />
-          </div>
-          <div>
-            <span className="text-[10px] text-amber-100 font-bold block">Next Profit</span>
-            <strong className="text-xs font-black text-white block">Check Earnings</strong>
-          </div>
-        </button>
-      </div>
-
-      {/* 5. SUPPORT & CONTACTS BLOCK */}
+      {/* 3. SUPPORT & CONTACTS BLOCK */}
       <div className="p-4 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-        {/* Task Spotlight Banner */}
-        <button
-          onClick={() => onNavigate('tasks')}
-          className="w-full p-3 rounded-2xl bg-gradient-to-r from-[#0098ff] to-[#00b4ff] text-white flex items-center justify-between shadow-md hover:brightness-105 transition-all"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-              <i className="fa fa-bolt text-amber-300 text-sm" />
-            </span>
-            <div className="text-left">
-              <small className="text-[10px] font-bold text-white/80 block leading-none">Rewards</small>
-              <strong className="text-xs font-black text-white block mt-0.5">Open Tasks</strong>
-            </div>
-          </div>
-          <i className="fa fa-chevron-right text-xs text-white/80" />
-        </button>
-
-        <div className="pt-1">
-          <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider block">
-            Support
-          </span>
-          <h3 className="text-sm font-black text-[#281f41]">Contacts & Files</h3>
-        </div>
-
         <div className="grid grid-cols-2 gap-2 text-xs">
-          {/* WhatsApp Channel */}
-          <a
-            href="https://whatsapp.com/channel/0029Vb8rWApA89MjWfuzM93a"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-3 rounded-2xl bg-[#fff7ed] border border-orange-200/80 flex items-center gap-2.5 hover:bg-orange-100/60 transition-all"
-          >
-            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
-              <i className="fa-brands fa-whatsapp text-lg" />
-            </div>
-            <div>
-              <small className="text-[10px] font-bold text-slate-500 block leading-none">Updates</small>
-              <strong className="text-xs font-black text-[#281f41] block mt-0.5">WhatsApp Channel</strong>
-            </div>
-          </a>
-
-          {/* Admin */}
-          <a
-            href="https://wa.me/+923483747208"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-3 rounded-2xl bg-[#fefce8] border border-amber-200/80 flex items-center gap-2.5 hover:bg-amber-100/60 transition-all"
-          >
-            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
-              <i className="fa-brands fa-whatsapp text-lg" />
-            </div>
-            <div>
-              <small className="text-[10px] font-bold text-slate-500 block leading-none">Support</small>
-              <strong className="text-xs font-black text-[#281f41] block mt-0.5">Admin</strong>
-            </div>
-          </a>
-
-          {/* Owner */}
           <a
             href="https://wa.me/+9233312345671"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 rounded-2xl bg-[#f1f5f9] border border-slate-200 flex items-center gap-2.5 hover:bg-slate-200/60 transition-all"
+            className="p-3 rounded-2xl bg-[#d8f3e2] border border-emerald-500/70 flex items-center gap-2.5 hover:bg-emerald-100/80 transition-all"
           >
             <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
-              <i className="fa-brands fa-whatsapp text-lg" />
+              <i className="fa-brands fa-whatsapp text-base" />
             </div>
             <div>
               <small className="text-[10px] font-bold text-slate-500 block leading-none">Contact</small>
@@ -355,12 +148,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </a>
 
-          {/* Android App */}
           <a
             href="http://localhost/admin2/uploads/android_app_1781424673.apk"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 rounded-2xl bg-[#eff6ff] border border-sky-200 flex items-center gap-2.5 hover:bg-sky-100/60 transition-all"
+            className="p-3 rounded-2xl bg-[#d9edf9] border border-sky-500/70 flex items-center gap-2.5 hover:bg-sky-100/80 transition-all"
           >
             <div className="w-8 h-8 rounded-xl bg-[#0098ff] text-white flex items-center justify-center flex-shrink-0">
               <i className="fa-brands fa-android text-base" />
@@ -371,10 +163,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </a>
 
-          {/* FBR Document */}
           <button
             onClick={() => onNavigate('documents')}
-            className="p-3 rounded-2xl bg-[#fff7ed] border border-orange-200/80 flex items-center gap-2.5 hover:bg-orange-100/60 transition-all text-left"
+            className="p-3 rounded-2xl bg-[#ffe2bf] border border-orange-500/70 flex items-center gap-2.5 hover:bg-orange-100/80 transition-all text-left"
           >
             <div className="w-8 h-8 rounded-xl bg-orange-500 text-white flex items-center justify-center flex-shrink-0">
               <i className="fa-solid fa-file-contract text-sm" />
@@ -385,10 +176,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </button>
 
-          {/* SECP Document */}
           <button
             onClick={() => onNavigate('documents')}
-            className="p-3 rounded-2xl bg-[#ecfdf5] border border-emerald-200/80 flex items-center gap-2.5 hover:bg-emerald-100/60 transition-all text-left"
+            className="p-3 rounded-2xl bg-[#c8f2e5] border border-emerald-500/70 flex items-center gap-2.5 hover:bg-emerald-100/80 transition-all text-left"
           >
             <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
               <i className="fa-solid fa-shield-halved text-sm" />
@@ -401,7 +191,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 6. REFERRAL LINK CARD */}
+      {/* 4. REFERRAL LINK CARD */}
       <div className="p-4 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-2">
         <h3 className="text-xs font-black text-[#281f41]">Your Referral Link</h3>
         <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#f8fafc] border border-slate-200">
@@ -421,7 +211,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 7. ACCOUNT SUMMARY CARD */}
+      {/* 5. ACCOUNT SUMMARY CARD */}
       <div className="p-4 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
         <h3 className="text-xs font-black text-[#281f41] uppercase tracking-wider">
           Account Summary
@@ -467,7 +257,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Active Package Button at Bottom */}
         <button
           onClick={() => onNavigate('plans')}
           className="w-full p-3.5 rounded-2xl bg-[#281f41] text-white flex items-center justify-between hover:bg-[#1d1733] transition-all shadow-md mt-1"

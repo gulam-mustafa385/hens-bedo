@@ -283,9 +283,9 @@ export const AndroidShell: React.FC<AndroidShellProps> = ({
 
             {/* CENTER (+) BUTTON */}
             <button
-              onClick={onOpenDeposit}
+              onClick={() => onNavigate('plans')}
               className="relative -top-5 w-13 h-13 w-12 h-12 rounded-full bg-gradient-to-r from-[#1edac8] to-[#0097f3] text-white flex items-center justify-center shadow-[0_8px_20px_rgba(0,151,243,0.4)] hover:scale-105 active:scale-95 transition-all"
-              title="Buy Plan / Deposit"
+              title="Buy Plan"
             >
               <i className="fa-solid fa-plus text-xl stroke-[3]" />
             </button>

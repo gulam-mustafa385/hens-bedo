@@ -52,16 +52,25 @@ const DEMO_USER: UserProfile = {
   createdAt: '2026-08-01',
 };
 
+const ADMIN_EMAILS = new Set(['dhy@gmail.cim', 'dhy@gmail.com']);
+
+function hasAdminAccessForEmail(email?: string) {
+  if (!email) return false;
+  return ADMIN_EMAILS.has(email.trim().toLowerCase());
+}
+
 function generateReferralCode(username: string): string {
   return username.substring(0, 4).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
 }
 
 /** Build a fresh profile for a newly registered Firebase user. */
 function buildProfileFromFirebaseUser(fbUser: FirebaseUser, username?: string, referralCode?: string): UserProfile {
+  const promotionRole = hasAdminAccessForEmail(fbUser.email || '') ? 'admin' : 'user';
   const profile: UserProfile = {
     uid: fbUser.uid,
     username: username || fbUser.displayName || fbUser.email?.split('@')[0] || 'investor',
     email: fbUser.email || '',
+    role: promotionRole,
     balance: 500, // Sign-up bonus!
     totalDeposited: 0,
     totalWithdrawn: 0,
@@ -144,7 +153,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const snap = await getDoc(profileRef);
         if (snap.exists()) {
-          setUser(snap.data() as UserProfile);
+          const profileData = snap.data() as UserProfile;
+          const normalizedEmail = (profileData.email || fbUser.email || '').trim().toLowerCase();
+          const shouldBeAdmin = hasAdminAccessForEmail(normalizedEmail);
+          const normalizedProfile = {
+            ...profileData,
+            uid: fbUser.uid,
+            email: profileData.email || fbUser.email || '',
+            role: shouldBeAdmin ? 'admin' : profileData.role || 'user',
+          } as UserProfile;
+
+          if (shouldBeAdmin && normalizedProfile.role !== 'admin') {
+            normalizedProfile.role = 'admin';
+          }
+
+          if (shouldBeAdmin && normalizedProfile.role === 'admin') {
+            await updateDoc(profileRef, { role: 'admin' });
+          }
+
+          setUser(normalizedProfile);
         } else {
           const newProfile = buildProfileFromFirebaseUser(fbUser);
           await setDoc(profileRef, { ...newProfile, createdAt: serverTimestamp() });
@@ -199,6 +226,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         uid: 'uid_' + cleanName,
         username: cleanName,
         email: `${cleanName.toLowerCase()}@vertexinvest.com`,
+        role: 'user',
         balance: 10000,
         totalDeposited: 15000,
         totalWithdrawn: 5000,
@@ -256,6 +284,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         uid: 'uid_' + Math.random().toString(36).substring(2, 9),
         username: cleanName,
         email: email.trim(),
+        role: 'user',
         balance: 500, // Sign-up bonus!
         totalDeposited: 0,
         totalWithdrawn: 0,

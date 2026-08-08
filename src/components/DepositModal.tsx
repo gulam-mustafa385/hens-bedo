@@ -101,15 +101,14 @@ export const DepositModal: React.FC<DepositModalProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             className="w-full max-w-md max-h-[82vh] flex flex-col rounded-3xl bg-[#1a1f33] text-white shadow-2xl border border-slate-700/80 my-auto overflow-hidden"
           >
-            {/* Header */}
-            <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-slate-700/80 bg-[#1a1f33] z-20">
+            <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-slate-700/80 bg-gradient-to-r from-[#f59016] to-[#f9a513] z-20">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-9 h-9 rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
+                <div className="flex items-center justify-center w-9 h-9 rounded-2xl bg-[#1d304b] text-white shadow-md shadow-blue-500/20">
                   <Wallet className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-black text-white">Deposit Funds</h3>
-                  <p className="text-[11px] font-bold text-slate-400">Instant gateway verification</p>
+                  <p className="text-[11px] font-bold text-white/80">Instant gateway verification</p>
                 </div>
               </div>
               <button
@@ -121,7 +120,6 @@ export const DepositModal: React.FC<DepositModalProps> = ({
               </button>
             </div>
 
-            {/* Content Body - Scrollable */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {!isSubmitted ? (
                 <form onSubmit={handleSubmit} className="space-y-4">

@@ -69,6 +69,7 @@ export interface UserProfile {
   uid: string;
   username: string;
   email: string;
+  role?: 'admin' | 'user';
   balance: number;
   totalDeposited: number;
   totalWithdrawn: number;
@@ -80,6 +81,10 @@ export interface UserProfile {
   pendingWithdrawalsCount: number;
   pendingDepositsCount: number;
   createdAt: string;
+  transactions?: Transaction[];
+  investments?: UserInvestment[];
+  teamMembers?: TeamMember[];
+  tasks?: TaskReward[];
 }
 
 export interface PaymentGateway {
